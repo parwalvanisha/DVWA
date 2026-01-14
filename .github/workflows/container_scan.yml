@@ -40,3 +40,8 @@ jobs:
         with:
           accuknox_token: ${{ secrets.ACCUKNOX_TOKEN }}
           accuknox_label: ${{ secrets.ACCUKNOX_LABEL }}
+          accuknox_endpoint: ${{ secrets.ACCUKNOX_ENDPOINT }} 
+          image_name: ghcr.io/${{ github.repository_owner }}/dvwa 
+          tag: ${{ github.sha }} 
+          severity: HIGH 
+          soft_fail: true

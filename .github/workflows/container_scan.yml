@@ -3,7 +3,7 @@ name: AccuKnox Container Scan
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   container-scan:

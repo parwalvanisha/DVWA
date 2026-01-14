@@ -27,7 +27,7 @@ jobs:
           dast_scan_type: "full-scan"
 
       - name: Upload DAST Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@latest
         with:
           name: dast-report
           path: report.json

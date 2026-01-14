@@ -19,7 +19,7 @@ jobs:
           accuknox_endpoint: ${{ secrets.ACCUKNOX_ENDPOINT }}
           accuknox_label: ${{ secrets.ACCUKNOX_LABEL }}
           accuknox_token: ${{ secrets.ACCUKNOX_TOKEN }}
-          image: "${{ github.run_id }}"
+          image: dvwa-test:${{ github.run_id }}
           tag: "latest"             # optional
           severity: "LOW, MEDIUM, HIGH, CRITICAL, UNKNOWN"
           

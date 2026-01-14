@@ -9,33 +9,34 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
+      # Checkout your DVWA repo
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Build the Docker image once
+      # Build the Docker image locally so both scanners can use it
       - name: Build Docker image
         run: |
           docker build -t ghcr.io/${{ github.repository_owner }}/dvwa:${{ github.sha }} .
 
-      # Run Trivy scan (results in GitHub Actions logs)
+      # Run Trivy scan and save results in SARIF format
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ghcr.io/${{ github.repository_owner }}/dvwa:${{ github.sha }}
-          format: table
-          exit-code: 0   # 0 = soft fail, pipeline continues
-          ignore-unfixed: true
+          format: sarif
+          output: trivy-results.sarif
           vuln-type: os,library
+          ignore-unfixed: true
 
-      # Run AccuKnox scan (results visible on AccuKnox platform)
+      # Upload Trivy results to GitHub Security tab
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+
+      # Run AccuKnox scan (results uploaded to AccuKnox platform)
       - name: Run AccuKnox Container Scanner
         uses: accuknox/container-scan-action@latest
         with:
           accuknox_token: ${{ secrets.ACCUKNOX_TOKEN }}
-          accuknox_label: dvwa-test
-          accuknox_endpoint: https://app.demo.accuknox.com
-          image_name: ghcr.io/${{ github.repository_owner }}/dvwa
-          tag: ${{ github.sha }}
-          severity: HIGH
-          soft_fail: true
-
+          accuknox_label: ${{ secrets.ACCUKNOX_LABEL }}

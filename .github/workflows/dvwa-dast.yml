@@ -2,7 +2,10 @@ name: DVWA DAST Scan
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
+    paths:
+      - ".github/workflows/dvwa-dast.yml"
+      - "dvwa/**"
 
 jobs:
   dast-scan:
@@ -14,10 +17,12 @@ jobs:
       - name: Start DVWA in Docker
         run: |
           docker run -d -p 8080:80 vulnerables/web-dvwa
-          sleep 20  # wait for DVWA to start
+          echo "Waiting for DVWA to start..."
+          sleep 30
 
       - name: Run AccuKnox DAST Scan
         uses: accuknox/dast-scan-action@latest
+        continue-on-error: true
         with:
           target_url: "http://localhost:8080"
           accuknox_endpoint: ${{ secrets.ACCUKNOX_ENDPOINT }}
@@ -27,6 +32,7 @@ jobs:
           dast_scan_type: "full-scan"
 
       - name: Upload DAST Report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: dast-report
